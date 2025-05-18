@@ -4,28 +4,31 @@ public class EnemySpawner : MonoBehaviour
 {
     public GameObject enemyPrefab;
     public Transform[] spawnPoints;
-    public float spawnDelay = 30f;
+    public bool hasSpawned = false;
 
-    void Start()
+    public int spawnAtScore = 150; // Score threshold to trigger spawn
+
+    void Update()
     {
-        if (spawnPoints.Length > 0)
+        // Check if score condition is met and enemies haven't spawned yet
+        if (!hasSpawned && ScoreManager.instance != null && ScoreManager.instance.score >= spawnAtScore)
         {
-            Invoke("SpawnEnemies", spawnDelay);
-        }
-        else
-        {
-            Debug.LogWarning("No spawn points assigned in EnemySpawner.");
+            SpawnEnemies();
+            hasSpawned = true;
         }
     }
 
     void SpawnEnemies()
     {
+        if (spawnPoints.Length == 0)
+        {
+            Debug.LogWarning("No spawn points assigned in EnemySpawner.");
+            return;
+        }
+
         foreach (Transform point in spawnPoints)
         {
             Instantiate(enemyPrefab, point.position, Quaternion.identity);
         }
     }
 }
-
-
-
