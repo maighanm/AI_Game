@@ -1,4 +1,5 @@
 using UnityEngine;
+using TMPro;
 
 [RequireComponent(typeof(CharacterController))]
 public class PlayerControler : MonoBehaviour
@@ -12,10 +13,20 @@ public class PlayerControler : MonoBehaviour
 
     public bool gameOver = false;
 
+    [Header("UI Elements")]
+    public GameObject gameOverPanel;
+    public TextMeshProUGUI gameOverText;
+
     void Start()
     {
         characterController = GetComponent<CharacterController>();
         anim = GetComponentInChildren<Animation>(); // Access Animation component on child
+
+        if (gameOverPanel != null)
+            gameOverPanel.SetActive(false);
+
+        if (gameOverText != null)
+            gameOverText.gameObject.SetActive(false);
     }
 
     void Update()
@@ -36,38 +47,32 @@ public class PlayerControler : MonoBehaviour
 
         Vector3 horizontalMovement = input * moveSpeed;
 
-        // Apply gravity manually
+        // Apply gravity
         if (!characterController.isGrounded)
         {
             moveDirection.y -= gravity * Time.deltaTime;
         }
         else
         {
-            moveDirection.y = -1f; // Keeps the player grounded
+            moveDirection.y = -1f;
         }
 
-        // Combine horizontal and vertical movement
         moveDirection.x = horizontalMovement.x;
         moveDirection.z = horizontalMovement.z;
 
         characterController.Move(moveDirection * Time.deltaTime);
 
-        // Face movement direction
         if (input != Vector3.zero)
         {
             transform.rotation = Quaternion.LookRotation(input);
 
             if (anim && !anim.IsPlaying("Run"))
-            {
                 anim.Play("Run");
-            }
         }
         else
         {
             if (anim && !anim.IsPlaying("Idle"))
-            {
                 anim.Play("Idle");
-            }
         }
     }
 
@@ -80,8 +85,16 @@ public class PlayerControler : MonoBehaviour
             Time.timeScale = 0f;
 
             if (anim)
-            {
                 anim.Play("Idle");
+
+            // Show UI
+            if (gameOverPanel != null)
+                gameOverPanel.SetActive(true);
+
+            if (gameOverText != null)
+            {
+                gameOverText.text = "Game Over";
+                gameOverText.gameObject.SetActive(true);
             }
         }
     }
