@@ -17,10 +17,15 @@ public class PlayerControler : MonoBehaviour
     public GameObject gameOverPanel;
     public TextMeshProUGUI gameOverText;
 
+    [Header("Audio")]
+    public AudioSource backgroundMusicSource;
+    public AudioClip gameOverSound;
+    public AudioSource sfxSource;
+
     void Start()
     {
         characterController = GetComponent<CharacterController>();
-        anim = GetComponentInChildren<Animation>(); // Access Animation component on child
+        anim = GetComponentInChildren<Animation>();
 
         if (gameOverPanel != null)
             gameOverPanel.SetActive(false);
@@ -47,7 +52,6 @@ public class PlayerControler : MonoBehaviour
 
         Vector3 horizontalMovement = input * moveSpeed;
 
-        // Apply gravity
         if (!characterController.isGrounded)
         {
             moveDirection.y -= gravity * Time.deltaTime;
@@ -78,7 +82,7 @@ public class PlayerControler : MonoBehaviour
 
     void OnControllerColliderHit(ControllerColliderHit hit)
     {
-        if (hit.gameObject.CompareTag("Enemy"))
+        if (hit.gameObject.CompareTag("Enemy") && !gameOver)
         {
             Debug.Log("Game Over");
             gameOver = true;
@@ -87,7 +91,15 @@ public class PlayerControler : MonoBehaviour
             if (anim)
                 anim.Play("Idle");
 
-            // Show UI
+            // Stop background music
+            if (backgroundMusicSource != null)
+                backgroundMusicSource.Stop();
+
+            // Play game over sound
+            if (sfxSource != null && gameOverSound != null)
+                sfxSource.PlayOneShot(gameOverSound);
+
+            // Show game over UI
             if (gameOverPanel != null)
                 gameOverPanel.SetActive(true);
 
