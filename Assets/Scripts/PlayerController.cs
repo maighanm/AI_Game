@@ -1,25 +1,28 @@
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
-public class PlayerController : MonoBehaviour
+public class PlayerControler : MonoBehaviour
 {
     public float moveSpeed = 6f;
     public float gravity = 20f;
 
     private Vector3 moveDirection = Vector3.zero;
     private CharacterController characterController;
+    private Animation anim;
 
     public bool gameOver = false;
 
     void Start()
     {
         characterController = GetComponent<CharacterController>();
+        anim = GetComponentInChildren<Animation>(); // Access Animation component on child
     }
 
     void Update()
     {
         if (gameOver)
             return;
+
         Vector3 input = Vector3.zero;
 
         if (Input.GetKey(KeyCode.UpArrow))
@@ -53,8 +56,21 @@ public class PlayerController : MonoBehaviour
         if (input != Vector3.zero)
         {
             transform.rotation = Quaternion.LookRotation(input);
+
+            if (anim && !anim.IsPlaying("Run"))
+            {
+                anim.Play("Run");
+            }
+        }
+        else
+        {
+            if (anim && !anim.IsPlaying("Idle"))
+            {
+                anim.Play("Idle");
+            }
         }
     }
+
     void OnControllerColliderHit(ControllerColliderHit hit)
     {
         if (hit.gameObject.CompareTag("Enemy"))
@@ -62,6 +78,11 @@ public class PlayerController : MonoBehaviour
             Debug.Log("Game Over");
             gameOver = true;
             Time.timeScale = 0f;
+
+            if (anim)
+            {
+                anim.Play("Idle");
+            }
         }
     }
 }
