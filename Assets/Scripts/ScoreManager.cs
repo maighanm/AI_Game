@@ -8,10 +8,14 @@ public class ScoreManager : MonoBehaviour
     public int score = 0;
 
     [Header("UI Elements")]
-    public TextMeshProUGUI scoreText;     // Text to show the current score
-    public GameObject levelPanel;         // Black transparent panel behind level text
-    public TextMeshProUGUI levelText;     // Level text (white)
-    public TextMeshProUGUI youWinText;    // You Win text
+    public TextMeshProUGUI scoreText;
+    public GameObject levelPanel;
+    public TextMeshProUGUI levelText;
+    public TextMeshProUGUI youWinText;
+
+    [Header("Audio")]
+    public AudioSource bgmSource;  // Background music
+    public AudioSource winSFX;     // Sound to play on winning
 
     private int currentLevel = 1;
 
@@ -27,6 +31,7 @@ public class ScoreManager : MonoBehaviour
     {
         UpdateScoreDisplay();
         ShowLevel("Level 1");
+
         if (youWinText != null)
             youWinText.gameObject.SetActive(false);
     }
@@ -40,7 +45,7 @@ public class ScoreManager : MonoBehaviour
 
     void UpdateScoreDisplay()
     {
-        if(scoreText != null)
+        if (scoreText != null)
             scoreText.text = "Score: " + score;
     }
 
@@ -50,8 +55,8 @@ public class ScoreManager : MonoBehaviour
         {
             levelText.text = levelString;
             levelPanel.SetActive(true);
-            CancelInvoke(nameof(HideLevel));   // Cancel previous hide invoke if any
-            Invoke(nameof(HideLevel), 3f);     // Hide panel after 3 seconds
+            CancelInvoke(nameof(HideLevel));
+            Invoke(nameof(HideLevel), 3f);
         }
     }
 
@@ -88,6 +93,14 @@ public class ScoreManager : MonoBehaviour
 
         if (levelPanel != null)
             levelPanel.SetActive(false);
+
+        // Stop background music
+        if (bgmSource != null && bgmSource.isPlaying)
+            bgmSource.Stop();
+
+        // Play win sound
+        if (winSFX != null)
+            winSFX.Play();
 
         Time.timeScale = 0f; // Pause the game
     }

@@ -19,8 +19,7 @@ public class PlayerControler : MonoBehaviour
 
     [Header("Audio")]
     public AudioSource backgroundMusicSource;
-    public AudioClip gameOverSound;
-    public AudioSource sfxSource;
+    public AudioSource sfxSource; // The clip is already assigned in this AudioSource
 
     void Start()
     {
@@ -91,15 +90,13 @@ public class PlayerControler : MonoBehaviour
             if (anim)
                 anim.Play("Idle");
 
-            // Stop background music
             if (backgroundMusicSource != null)
                 backgroundMusicSource.Stop();
 
-            // Play game over sound
-            if (sfxSource != null && gameOverSound != null)
-                sfxSource.PlayOneShot(gameOverSound);
+            // Play the assigned Game Over sound (already set inside the sfxSource)
+            if (sfxSource != null)
+                sfxSource.Play();
 
-            // Show game over UI
             if (gameOverPanel != null)
                 gameOverPanel.SetActive(true);
 
